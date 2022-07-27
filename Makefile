@@ -8,9 +8,9 @@ SRCS		= src/create.c
 SRCS		+= src/destroy.c
 SRCS		+= src/write.c
 SRCS		+= src/read.c
-SRCS		+= src/read_with_flags.c
+SRCS		+= src/recv.c
 SRCS		+= src/flush.c
-SRCS		+= src/flush_with_flags.c
+SRCS		+= src/flushf.c
 
 TESTS_SRCS	:= $(SRCS)
 TESTS_SRCS	+= tests/create_tests.c
@@ -22,7 +22,7 @@ TESTS_OBJS	= $(TESTS_SRCS:.c=.o)
 RM			= rm -f
 
 CFLAGS		+= -Wall -Wextra -fPIC -pedantic
-CPPFLAGS	+= -I ./include
+CPPFLAGS	+= -iquote ./include
 LDFLAGS		= -shared -L./socky -lsocky -L./buffy -lbuffy
 
 GREEN		= '\033[0;32m'
@@ -76,7 +76,7 @@ re: fclean all
 install: re
 	@cp $(NAME) /usr/lib/$(NAME) 2> /dev/null || \
 	printf "\033[1m\033[31mError : try sudo make install\033[0m\n" && \
-	cp include/socky.h /usr/include/ 2> /dev/null && \
+	cp include/buffered_socky.h /usr/include/ 2> /dev/null && \
 	printf "\033[1m\033[32mLibrary successfull installed !\033[0m\n"
 
 static: $(OBJS)

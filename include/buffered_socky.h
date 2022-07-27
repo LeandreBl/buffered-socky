@@ -13,13 +13,13 @@
  * It is used to buffer data sent and received from a socket.
  * 
  * \var socky: The socky socket wrapper structure.
- * \var buffy_read: The buffy structure used to buffer data received from the socket.
- * \var buffy_write: The buffy structure used to buffer data sent to the socket.
+ * \var buffy_reader: The buffy structure used to buffer data received from the socket.
+ * \var buffy_writer: The buffy structure used to buffer data sent to the socket.
  */
 struct buffered_socky {
     struct socky socky;
-    struct buffy input_buffy;
-    struct buffy output_buffy;
+    struct buffy buffy_reader;
+    struct buffy buffy_writer;
 };
 
 /**
@@ -35,12 +35,12 @@ struct buffered_socky {
  * \var write_buffy_allocation_strategy: The allocation strategy of the write buffy.
  * \var write_buffy_capacity: The capacity of the write buffy.
  */
-struct buffered_socket_params {
+struct buffered_socky_params {
     enum socky_protocol protocol;
-    enum buffy_allocation_strategy input_buffy_allocation_strategy;
-    size_t input_buffy_capacity;
-    enum buffy_allocation_strategy output_buffy_allocation_strategy;
-    size_t output_buffy_capacity;
+    enum buffy_allocation_strategy buffy_reader_allocation_strategy;
+    size_t buffy_reader_capacity;
+    enum buffy_allocation_strategy buffy_writer_allocation_strategy;
+    size_t buffy_writer_capacity;
 };
 
 /**
@@ -53,7 +53,7 @@ struct buffered_socket_params {
  * 
  * \return 0 on success, -1 on error, errno is set accordingly.
  */
-int buffered_socky_create(struct buffered_socky *bsocky, const struct buffered_socket_params *params) __nonnull((1));
+int buffered_socky_create(struct buffered_socky *bsocky, const struct buffered_socky_params *params) __nonnull((1));
 
 /**
  * \fn int buffered_socky_destroy(struct buffered_socky *bsocky)
@@ -84,6 +84,8 @@ ssize_t buffered_socky_write(struct buffered_socky *bsocky, const void *data, si
  * 
  * \brief Flush the buffer to write of a buffered socket.
  * 
+ * \note This function is the equivalent of calling buffered_socky_flushf with flags set to 0.
+ * 
  * \param bsocky The socket to flush.
  * 
  * \return The number of bytes flushed on success, -1 on error, errno is set accordingly.
@@ -91,7 +93,7 @@ ssize_t buffered_socky_write(struct buffered_socky *bsocky, const void *data, si
 ssize_t buffered_socky_flush(struct buffered_socky *bsocky) __nonnull((1));
 
 /**
- * \fn int buffered_socky_flush_with_flags(struct buffered_socky *bsocky, int flags)
+ * \fn int buffered_socky_flushf(struct buffered_socky *bsocky, int flags)
  * 
  * \brief Flush the buffer to write of a buffered socket with given flags, this function uses send with the given flags.
  * 
@@ -100,25 +102,26 @@ ssize_t buffered_socky_flush(struct buffered_socky *bsocky) __nonnull((1));
  * 
  * \return The number of bytes flushed on success, -1 on error, errno is set accordingly.
  */
-ssize_t buffered_socky_flush_with_flags(struct buffered_socky *bsocky, int flags) __nonnull((1));
+ssize_t buffered_socky_flushf(struct buffered_socky *bsocky, int flags) __nonnull((1));
 
 /**
  * \fn int buffered_socky_read(struct buffered_socky *bsocky, void *data, size_t size)
  * 
- * \brief Read data from a buffered socket and store it into the buffy_read buffer.
+ * \brief Read data from a buffered socket and store it into the buffy_reader buffer.
+ * 
+ * \note This function is the equivalent of calling buffered_socky_recv with flags set to 0.
  * 
  * \param bsocky The socket to read from.
- * \param data The data to read.
  * \param size The size of the data to read.
  * 
  * \return The number of bytes read on success, -1 on error, errno is set accordingly.
  */
-ssize_t buffered_socky_read(struct buffered_socky *bsocky, void *data, size_t size) __nonnull((1, 2));
+ssize_t buffered_socky_read(struct buffered_socky *bsocky, size_t size) __nonnull((1));
 
 /**
  * \fn int buffered_socky_read(struct buffered_socky *bsocky, void *data, size_t size)
  * 
- * \brief Read data from a buffered socket and store it into the buffy_read buffer, this function uses recv with the given flags.
+ * \brief Read data from a buffered socket and store it into the buffy_reader buffer, this function uses recv with the given flags.
  * 
  * \param bsocky The socket to read from.
  * \param data The data to read.
@@ -127,6 +130,6 @@ ssize_t buffered_socky_read(struct buffered_socky *bsocky, void *data, size_t si
  * 
  * \return The number of bytes read on success, -1 on error, errno is set accordingly.
  */
-ssize_t buffered_socky_read_with_flags(struct buffered_socky *bsocky, void *data, size_t size, int flags) __nonnull((1, 2));
+ssize_t buffered_socky_recv(struct buffered_socky *bsocky, size_t size, int flags) __nonnull((1));
 
 #endif /* !BUFFERED_SOCKY_H */

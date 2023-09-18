@@ -26,7 +26,7 @@ DEPENDENCIES = buffy socky
 RECURSIVE_HEADERS = $(shell dirname `find . -name "*.h"`)
 
 CFLAGS		+= -Wall -Wextra -fPIC -pedantic
-CPPFLAGS	+= -iquote ./include $(addprefix -iquote,$(RECURSIVE_HEADERS))
+CPPFLAGS	+= -I ./include $(addprefix -iquote,$(RECURSIVE_HEADERS))
 LIBS		= $(addprefix -l,$(DEPENDENCIES))
 LDFLAGS		= -shared $(LIBS) $(addprefix -L,$(DEPENDENCIES))
 
@@ -40,11 +40,11 @@ NO_COLOR=`tput sgr0`
 	@echo "$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@ ["$(GREEN)"OK"$(NO_COLOR)"]"
 .SUFFIXES: .o .c
 
+all: dependencies $(NAME)
+
 dependencies:
 	git submodule update --init --recursive
 	git submodule foreach make
-
-all: dependencies $(NAME)
 
 $(NAME): $(OBJS)
 	@$ $(CC) $(LDFLAGS) $(OBJS) $(LIBS) -o $@
@@ -58,8 +58,6 @@ tests_run: dependencies $(TESTS_OBJS)
 	@echo "$(CC) -lcriterion $(TESTS_OBJS) $(LIBS) -o $@ \
 	["$(GREEN)"LINKING OK"$(NO_COLOR)"]"
 	./$@
-	@pkill nc || true
-	@pkill $@ || true
 	@$(RM) $@
 	@$(RM) $(TESTS_OBJS)
 
@@ -78,17 +76,17 @@ debug: CFLAGS += -g3
 debug: re
 
 clean:
-	git submodule foreach make $0
+	git submodule foreach make $@
 	$(RM) $(OBJS)
 
 fclean: clean
-	git submodule foreach make $0
+	git submodule foreach make $@
 	$(RM) $(NAME) $(NAME:.so=.a)
 
 re: fclean all
 
 install: re
-	git submodule foreach make $0
+	git submodule foreach make $@
 	@cp $(NAME) /usr/lib/$(NAME) 2> /dev/null || \
 	printf "\033[1m\033[31mError : try sudo make install\033[0m\n" && \
 	cp include/buffered_socky.h /usr/include/ 2> /dev/null && \

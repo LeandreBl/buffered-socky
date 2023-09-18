@@ -27,7 +27,8 @@ RECURSIVE_HEADERS = $(shell dirname `find . -name "*.h"`)
 
 CFLAGS		+= -Wall -Wextra -fPIC -pedantic
 CPPFLAGS	+= -iquote ./include $(addprefix -iquote,$(RECURSIVE_HEADERS))
-LDFLAGS		= -shared $(addprefix -l,$(DEPENDENCIES)) $(addprefix -L,$(DEPENDENCIES))
+LIBS		= $(addprefix -l,$(DEPENDENCIES))
+LDFLAGS		= -shared $(LIBS) $(addprefix -L,$(DEPENDENCIES))
 
 GREEN=`tput setaf 2`
 RED=`tput setaf 1`

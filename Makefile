@@ -51,6 +51,7 @@ $(NAME): $(OBJS)
 	["$(GREEN)"LINKING OK"$(NO_COLOR)"]"
 
 tests_run: $(TESTS_OBJS)
+	git submodule foreach make $0
 	@echo $(TESTS_OBJS)
 	@$ $(CC) -lcriterion $(TESTS_OBJS) $(LIBS) -o $@
 	@echo "$(CC) -lcriterion $(TESTS_OBJS) $(LIBS) -o $@ \
@@ -76,15 +77,17 @@ debug: CFLAGS += -g3
 debug: re
 
 clean:
+	git submodule foreach make $0
 	$(RM) $(OBJS)
 
 fclean: clean
+	git submodule foreach make $0
 	$(RM) $(NAME) $(NAME:.so=.a)
 
 re: fclean all
 
 install: re
-	git submodule foreach make install
+	git submodule foreach make $0
 	@cp $(NAME) /usr/lib/$(NAME) 2> /dev/null || \
 	printf "\033[1m\033[31mError : try sudo make install\033[0m\n" && \
 	cp include/buffered_socky.h /usr/include/ 2> /dev/null && \

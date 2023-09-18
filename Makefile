@@ -79,7 +79,7 @@ install: re
 	@cp $(NAME) /usr/lib/$(NAME) 2> /dev/null || \
 	printf "\033[1m\033[31mError : try sudo make install\033[0m\n" && \
 	cp include/buffered_socky.h /usr/include/ 2> /dev/null && \
-	printf "\033[1m\033[32mLibrary successfull installed !\033[0m\n"
+	printf "\033[1m\033[32mLibrary $(NAME) successfully installed !\033[0m\n"
 
 static: $(OBJS)
 	$(ARCHIVER) rc $(NAME:.so=.a) $(OBJS)

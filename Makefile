@@ -21,9 +21,11 @@ TESTS_OBJS	= $(TESTS_SRCS:.c=.o)
 
 RM			= rm -f
 
+DEPENDENCIES = buffy socky
+
 CFLAGS		+= -Wall -Wextra -fPIC -pedantic
-CPPFLAGS	+= -iquote ./include
-LDFLAGS		= -shared -L./socky -lsocky -L./buffy -lbuffy
+CPPFLAGS	+= -iquote ./include $(addprefix -iquote,$(DEPENDENCIES))
+LDFLAGS		= -shared $(addprefix -l,$(DEPENDENCIES)) $(addprefix -L,$(DEPENDENCIES))
 
 GREEN=`tput setaf 2`
 RED=`tput setaf 1`
@@ -35,7 +37,11 @@ NO_COLOR=`tput sgr0`
 	@echo "$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@ ["$(GREEN)"OK"$(NO_COLOR)"]"
 .SUFFIXES: .o .c
 
-all: $(NAME)
+dependencies:
+	git submodule update --init
+	git submodule foreach make
+
+all: dependencies $(NAME)
 
 $(NAME): $(OBJS)
 	@$ $(CC) $(LDFLAGS) $(OBJS) $(LIBS) -o $@
@@ -76,6 +82,7 @@ fclean: clean
 re: fclean all
 
 install: re
+	git submodule foreach make install
 	@cp $(NAME) /usr/lib/$(NAME) 2> /dev/null || \
 	printf "\033[1m\033[31mError : try sudo make install\033[0m\n" && \
 	cp include/buffered_socky.h /usr/include/ 2> /dev/null && \

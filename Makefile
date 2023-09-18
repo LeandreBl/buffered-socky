@@ -51,8 +51,8 @@ $(NAME): $(OBJS)
 	@echo "$(CC) $(LDFLAGS) $(OBJS) $(LIBS) -o $@ \
 	["$(GREEN)"LINKING OK"$(NO_COLOR)"]"
 
-tests_run: $(TESTS_OBJS)
-	git submodule foreach make $0
+tests_run: dependencies $(TESTS_OBJS)
+	git submodule foreach make $@
 	@echo $(TESTS_OBJS)
 	@$ $(CC) -lcriterion $(TESTS_OBJS) $(LIBS) -o $@
 	@echo "$(CC) -lcriterion $(TESTS_OBJS) $(LIBS) -o $@ \

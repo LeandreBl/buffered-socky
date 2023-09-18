@@ -23,8 +23,10 @@ RM			= rm -f
 
 DEPENDENCIES = buffy socky
 
+RECURSIVE_HEADERS = $(shell dirname `find . -name "*.h"`)
+
 CFLAGS		+= -Wall -Wextra -fPIC -pedantic
-CPPFLAGS	+= -iquote ./include $(addprefix -iquote,$(DEPENDENCIES))
+CPPFLAGS	+= -iquote ./include $(addprefix -iquote,$(RECURSIVE_HEADERS))
 LDFLAGS		= -shared $(addprefix -l,$(DEPENDENCIES)) $(addprefix -L,$(DEPENDENCIES))
 
 GREEN=`tput setaf 2`
@@ -38,7 +40,7 @@ NO_COLOR=`tput sgr0`
 .SUFFIXES: .o .c
 
 dependencies:
-	git submodule update --init
+	git submodule update --init --recursive
 	git submodule foreach make
 
 all: dependencies $(NAME)

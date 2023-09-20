@@ -44,7 +44,7 @@ struct buffered_socky_params {
 };
 
 /**
- * \fn int socky_create(struct socky *socky, enum socky_protocol protocol)
+ * \fn int socky_create(struct buffered_socky *bsocky, enum socky_protocol protocol)
  * 
  * \brief Open a socket and set it's protocol for later use.
  * 
@@ -53,7 +53,21 @@ struct buffered_socky_params {
  * 
  * \return 0 on success, -1 on error, errno is set accordingly.
  */
-int buffered_socky_create(struct buffered_socky *bsocky, const struct buffered_socky_params *params) __nonnull((1));
+int buffered_socky_create(struct buffered_socky *bsocky, const struct buffered_socky_params *params) __nonnull((1, 2));
+
+/**
+ * \fn int buffered_socky_create_from_socky(struct buffered_socky *bsocky, const struct socky *socky, enum socky_protocol protocol)
+ * 
+ * \brief Create a buffered socky from a socky
+ * 
+ * \param bsocky The buffered socket to create.
+ * \param socky The socket to use in this buffered socket
+ * \param proto The protocol of the socket.
+ * 
+ * \return 0 on success, -1 on error, errno is set accordingly.
+ */
+int buffered_socky_create_from_socky(struct buffered_socky *bsocky, const struct socky *socky, const struct buffered_socky_params *params) __nonnull((1, 2, 3));
+
 
 /**
  * \fn int buffered_socky_destroy(struct buffered_socky *bsocky)

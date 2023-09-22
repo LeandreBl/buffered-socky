@@ -74,6 +74,7 @@ val_run: $(TESTS_OBJS)
 
 debug: CFLAGS += -g3
 debug: re
+	git submodule foreach make $@
 
 clean:
 	git submodule foreach make $@

@@ -44,7 +44,7 @@ all: dependencies $(NAME)
 
 dependencies:
 	git submodule update --init --recursive
-	git submodule foreach make
+	git submodule foreach $(MAKE)
 
 $(NAME): $(OBJS)
 	@$ $(CC) $(LDFLAGS) $(OBJS) $(LIBS) -o $@
@@ -52,7 +52,7 @@ $(NAME): $(OBJS)
 	["$(GREEN)"LINKING OK"$(NO_COLOR)"]"
 
 tests_run: dependencies $(TESTS_OBJS)
-	git submodule foreach make $@
+	git submodule foreach $(MAKE) $@
 	@echo $(TESTS_OBJS)
 	@$ $(CC) -lcriterion $(TESTS_OBJS) $(LIBS) -o $@
 	@echo "$(CC) -lcriterion $(TESTS_OBJS) $(LIBS) -o $@ \
@@ -74,20 +74,20 @@ val_run: $(TESTS_OBJS)
 
 debug: CFLAGS += -ggdb3
 debug: all
-	git submodule foreach make $@
+	git submodule foreach $(MAKE) $@
 
 clean:
-	git submodule foreach make $@
+	git submodule foreach $(MAKE) $@
 	$(RM) $(OBJS)
 
 fclean: clean
-	git submodule foreach make $@
+	git submodule foreach $(MAKE) $@
 	$(RM) $(NAME) $(NAME:.so=.a)
 
 re: fclean all
 
 install: all
-	git submodule foreach make $@
+	git submodule foreach $(MAKE) $@
 	@cp $(NAME) /usr/lib/$(NAME) 2> /dev/null || \
 	printf "\033[1m\033[31mError : try sudo make install\033[0m\n" && \
 	cp include/buffered_socky.h /usr/include/ 2> /dev/null && \

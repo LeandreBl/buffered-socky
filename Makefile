@@ -61,7 +61,7 @@ tests_run: dependencies $(TESTS_OBJS)
 	@$(RM) $@
 	@$(RM) $(TESTS_OBJS)
 
-val_run: CFLAGS += -g3
+val_run: CFLAGS += -ggdb3
 val_run: $(TESTS_OBJS)
 	@$ $(CC) -lcriterion $(TESTS_OBJS) $(LIBS) -o $@
 	@echo "$(CC) -lcriterion $(TESTS_OBJS) $(LIBS) -o $@ \
@@ -72,8 +72,8 @@ val_run: $(TESTS_OBJS)
 	@$(RM) $@
 	@$(RM) $(TESTS_OBJS)
 
-debug: CFLAGS += -g3
-debug: re
+debug: CFLAGS += -ggdb3
+debug: all
 	git submodule foreach make $@
 
 clean:
